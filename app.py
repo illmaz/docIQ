@@ -66,6 +66,31 @@ body, input, button, select, textarea, p, span, div, h1, h2, h3, h4, h5, h6, a {
     border: 1px solid #E5E7EB;
     border-radius: 8px;
 }
+[data-testid="stSidebar"] [data-testid="stFileUploader"] * {
+    color: #374151 !important;
+}
+[data-testid="stSidebar"] [data-testid="stFileUploader"] button {
+    background: #F9FAFB !important;
+    color: #374151 !important;
+    border: 1px solid #D1D5DB !important;
+}
+[data-testid="stFileUploaderDropzone"] {
+    background: #FFFFFF !important;
+    color: #374151 !important;
+}
+[data-testid="stFileUploaderDropzone"] * {
+    color: #374151 !important;
+}
+
+[data-testid="stFileUploaderDropzone"] * {
+    color: #374151 !important;
+}
+
+header[data-testid="stHeader"] {
+    background: #FFFFFF !important;
+}
+
+
 
 /* ── Main area buttons ── */
 .stButton > button {
