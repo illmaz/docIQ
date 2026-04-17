@@ -16,6 +16,15 @@ st.set_page_config(
 # ── CSS ───────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
+.stApp {
+            background: #FFFFFF !important;
+}
+
+.main {
+            background: #FFFFFF !important;
+            color: #111827 !important;
+}
+            
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 body, input, button, select, textarea, p, span, div, h1, h2, h3, h4, h5, h6, a { font-family: 'Inter', sans-serif !important; }
