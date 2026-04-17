@@ -326,7 +326,7 @@ with st.sidebar:
     uploaded_file = st.file_uploader(
         "Upload document",
         type=None,
-        label_visibility="hidden"
+        label_visibility="visible"
     )
 
     if uploaded_file:
