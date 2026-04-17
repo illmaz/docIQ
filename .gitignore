@@ -3,3 +3,6 @@ venv/
 __pycache__/
 *.pyc
 .streamlit/
+get-pip.py
+test.txt
+test.text
