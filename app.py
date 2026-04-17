@@ -16,6 +16,10 @@ st.set_page_config(
 # ── CSS ───────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body, input, button, select, textarea, p, span, div, h1, h2, h3, h4, h5, h6, a { font-family: 'Inter', sans-serif !important; }
+
 .stApp {
             background: #FFFFFF !important;
 }
@@ -24,10 +28,6 @@ st.markdown("""
             background: #FFFFFF !important;
             color: #111827 !important;
 }
-            
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-body, input, button, select, textarea, p, span, div, h1, h2, h3, h4, h5, h6, a { font-family: 'Inter', sans-serif !important; }
 
 /* ── Layout ── */
 .main .block-container {
@@ -41,7 +41,9 @@ body, input, button, select, textarea, p, span, div, h1, h2, h3, h4, h5, h6, a {
     background: #FAFAFA;
     border-right: 1px solid #E5E7EB;
 }
-[data-testid="stSidebar"] * { color: #374151 !important; }
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] .stMarkdown { color: #374151 !important; }
 
 [data-testid="stSidebar"] .stButton > button {
     background: #FFFFFF;
