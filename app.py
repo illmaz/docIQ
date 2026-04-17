@@ -324,9 +324,9 @@ with st.sidebar:
     # File uploader
     st.markdown('<div style="font-size:0.6875rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:#9CA3AF;margin-bottom:0.5rem;">Document</div>', unsafe_allow_html=True)
     uploaded_file = st.file_uploader(
-        " ",
+        "Upload document",
         type=None,
-        label_visibility="collapsed"
+        label_visibility="hidden"
     )
 
     if uploaded_file:
