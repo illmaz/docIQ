@@ -342,7 +342,7 @@ async def query_documents(question: str):
             """SELECT document_name, chunk_text, 
                1 - (embedding <=> %s::vector) as similarity
                FROM document_chunks
-               WHERE 1 - (embedding <=> %s::vector) > 0.2
+               WHERE 1 - (embedding <=> %s::vector) > 0.1
                ORDER BY embedding <=> %s::vector
                LIMIT 5""",
             (question_embedding, question_embedding, question_embedding)
