@@ -308,19 +308,33 @@ async def index_document(file: UploadFile = File(...)):
     BATCH_SIZE = 50
     all_embeddings = []
     
-    with pg_conn.cursor() as cursor:
-        cursor.execute(
-            "DELETE FROM document_chunks WHERE document_name = %s",
-            (file.filename,)
+    for i in range(0, len(chunks), BATCH_SIZE):
+        batch = chunks[i:i + BATCH_SIZE]
+        response = client.embeddings.create(
+            model="text-embedding-3-small",
+            input=batch
         )
-        
-        for i, (chunk, embedding) in enumerate(zip(chunks, all_embeddings)):
+        batch_embeddings = [r.embedding for r in response.data]
+        all_embeddings.extend(batch_embeddings)
+    
+    conn = psycopg2.connect(DB_URL)
+    register_vector(conn)
+    try:
+        with conn.cursor() as cursor:
             cursor.execute(
-                """INSERT INTO document_chunks 
-                   (document_name, chunk_index, chunk_text, embedding) 
-                   VALUES (%s, %s, %s, %s)""",
-                (file.filename, i, chunk, embedding)
+                "DELETE FROM document_chunks WHERE document_name = %s",
+                (file.filename,)
             )
+            for i, (chunk, embedding) in enumerate(zip(chunks, all_embeddings)):
+                cursor.execute(
+                    """INSERT INTO document_chunks 
+                       (document_name, chunk_index, chunk_text, embedding) 
+                       VALUES (%s, %s, %s, %s)""",
+                    (file.filename, i, chunk, embedding)
+                )
+        conn.commit()
+    finally:
+        conn.close()
     
     return {
         "filename": file.filename,
