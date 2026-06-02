@@ -8,13 +8,23 @@ from collections import Counter
 
 import fitz
 import psycopg2
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, Security, Depends
+from fastapi.security.api_key import APIKeyHeader
 from sqlalchemy import create_engine, text
 from openai import OpenAI
 from dotenv import load_dotenv
 from pgvector.psycopg2 import register_vector
 
 load_dotenv()
+
+API_KEY = os.getenv("DOCIQ_API_KEY")
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=True)
+
+async def verify_api_key(key: str = Security(api_key_header)):
+    if key != API_KEY:
+        raise HTTPException(status_code=403, detail="Invalid API key")
+    return key
+
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), max_retries=3)
 
 app = FastAPI()
@@ -149,7 +159,7 @@ def home():
         "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
 
-@app.get("/analyze")
+@app.get("/analyze", dependencies=[Depends(verify_api_key)])
 def analyze(input_text: str):
     stats = analyze_text(input_text)
     save_to_db(input_text, stats)
@@ -160,7 +170,7 @@ def analyze(input_text: str):
         "saved_to_database": True
     }
 
-@app.post("/upload")
+@app.post("/upload", dependencies=[Depends(verify_api_key)])
 async def upload_file(file: UploadFile = File(...)):
     contents = await file.read()
     input_text = extract_text(contents, file.filename)
@@ -173,7 +183,7 @@ async def upload_file(file: UploadFile = File(...)):
         "saved_to_database": True
     }
 
-@app.post("/analyze-ai")
+@app.post("/analyze-ai", dependencies=[Depends(verify_api_key)])
 async def analyze_ai(file: UploadFile = File(...)):
     contents = await file.read()
     input_text = extract_text(contents, file.filename)
@@ -266,7 +276,7 @@ async def analyze_ai(file: UploadFile = File(...)):
         "saved_to_database": True
     }
 
-@app.get("/history")
+@app.get("/history", dependencies=[Depends(verify_api_key)])
 def history():
     with engine.connect() as conn:
         result = conn.execute(text("""
@@ -292,7 +302,7 @@ def history():
         "analyses": analyses
     }
 
-@app.post("/index")
+@app.post("/index", dependencies=[Depends(verify_api_key)])
 async def index_document(file: UploadFile = File(...)):
     contents = await file.read()
     input_text = extract_text(contents, file.filename)
@@ -343,7 +353,7 @@ async def index_document(file: UploadFile = File(...)):
         "indexed_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
 
-@app.post("/query")
+@app.post("/query", dependencies=[Depends(verify_api_key)])
 async def query_documents(question: str):
     response = client.embeddings.create(
         model="text-embedding-3-small",
@@ -412,7 +422,7 @@ async def query_documents(question: str):
         "answered_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
 
-@app.get("/history/{id}")
+@app.get("/history/{id}", dependencies=[Depends(verify_api_key)])
 def get_analysis(id: int):
     with engine.connect() as conn:
         result = conn.execute(text("""
@@ -447,7 +457,7 @@ def get_analysis(id: int):
         "analyzed_at": str(row[9])
     }
 
-@app.delete("/documents/{filename}")
+@app.delete("/documents/{filename}", dependencies=[Depends(verify_api_key)])
 def delete_document(filename: str):
     with pg_conn.cursor() as cursor:
         cursor.execute(

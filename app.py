@@ -4,6 +4,9 @@ import streamlit as st
 import requests
 
 API_BASE = "http://127.0.0.1:8000"
+import os
+DOCIQ_API_KEY = os.getenv("DOCIQ_API_KEY", "")
+HEADERS = {"X-API-Key": DOCIQ_API_KEY}
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -247,7 +250,7 @@ for key in ["analysis_result", "query_result", "index_status", "selected_history
 def api_get(path, timeout=5):
     """GET request; returns (ok, data_or_message)."""
     try:
-        r = requests.get(f"{API_BASE}{path}", timeout=timeout)
+        r = requests.get(f"{API_BASE}{path}", headers=HEADERS, timeout=timeout)
         return r.status_code == 200, r.json()
     except requests.exceptions.ConnectionError:
         return False, "Cannot connect to the API. Is the server running?"
@@ -261,6 +264,7 @@ def api_post_file(path, file_obj, params=None, timeout=60):
             f"{API_BASE}{path}",
             files={"file": (file_obj.name, file_obj.getvalue(), file_obj.type or "text/plain")},
             params=params,
+            headers=HEADERS,
             timeout=timeout
         )
         if r.status_code == 200:
@@ -277,6 +281,7 @@ def api_post_query(question, timeout=30):
         r = requests.post(
             f"{API_BASE}/query",
             params={"question": question},
+            headers=HEADERS,
             timeout=timeout
         )
         if r.status_code == 200:
